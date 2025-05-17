@@ -17,7 +17,7 @@ namespace SocialApplication.API.Controllers.V2
             var post = new Post
             {
                 Id = id,
-                Content = "This is a sample post content."
+                Content = "This is a sample post content version 2."
             };
             return Ok(post);
         }
