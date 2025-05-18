@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using SocialApplication.Domain.Model;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace SocialApplication.API.Controllers.V1
 {
