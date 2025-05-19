@@ -1,25 +1,18 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using SocialApplication.Domain.Model;
+﻿using Microsoft.AspNetCore.Mvc;
+using SocialApplication.API.ApiRoutes;
 
 namespace SocialApplication.API.Controllers.V2
 {
     [ApiVersion("2.0")]
-    [Route("api/v{version:apiVersion}/[controller]")]
+    [Route(ApiRoute.BaseRoute)]
     [ApiController]
     public class PostsController : ControllerBase
     {
         [HttpGet]
-        [Route("{id}")]
+        [Route(ApiRoute.Posts.GetById)]
         public IActionResult GetPostById(int id)
         {
-            // Simulate fetching a post from a database
-            var post = new Post
-            {
-                Id = id,
-                Content = "This is a sample post content version 2."
-            };
-            return Ok(post);
+            return Ok();
         }
     }
 }

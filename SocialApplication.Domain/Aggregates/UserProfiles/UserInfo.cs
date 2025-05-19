@@ -8,9 +8,9 @@ namespace SocialApplication.Domain.Aggregates.UserProfiles
     {
         private UserInfo()
         {
-            
+
         }
-        public string FirstName { get;private set; }
+        public string FirstName { get; private set; }
         public string LastName { get; private set; }
         public string EmailAddress { get; private set; }
         public string PhoneNumber { get; private set; }
@@ -31,4 +31,5 @@ namespace SocialApplication.Domain.Aggregates.UserProfiles
                 DateOfBirth = dateOfBirth
             };
         }
+    }
 }

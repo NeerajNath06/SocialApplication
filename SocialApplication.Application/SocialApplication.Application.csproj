@@ -6,4 +6,20 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="14.0.0" />
+    <PackageReference Include="MediatR" Version="12.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Commands\Posts\" />
+    <Folder Include="Handlers\Posts\" />
+    <Folder Include="Queries\Posts\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SocialApplication.DAL\SocialApplication.DAL.csproj" />
+    <ProjectReference Include="..\SocialApplication.Domain\SocialApplication.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
