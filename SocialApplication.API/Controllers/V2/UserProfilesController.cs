@@ -1,19 +1,17 @@
 ﻿
 
-namespace SocialApplication.API.Controllers.V1
+namespace SocialApplication.API.Controllers.V2
 {
     using AutoMapper;
     using MediatR;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Mvc.Infrastructure;
     using SocialApplication.API.ApiRoutes;
     using SocialApplication.API.Contracts.UserProfiles.Requests;
     using SocialApplication.API.Contracts.UserProfiles.Responcses;
     using SocialApplication.Application.Commands.UserProfiles;
     using SocialApplication.Application.Queries.UserProfiles;
-    using SocialApplication.Domain.Aggregates.UserProfiles;
 
-    [ApiVersion("1.0")]
+    [ApiVersion("2.0")]
     [Route(ApiRoute.BaseRoute)]
     [ApiController]
     public class UserProfilesController : ControllerBase
@@ -52,8 +50,8 @@ namespace SocialApplication.API.Controllers.V1
         [Route(ApiRoute.UserProfiles.IdRoute)]
         public async Task<IActionResult> GetUserProfileByIdAsync(string id)
         {
-            var query = new GetUserProfileByIdQuery{ProfileId =Guid.Parse(id)};
-            var result =  await _mediator.Send(query);
+            var query = new GetUserProfileByIdQuery { ProfileId = Guid.Parse(id) };
+            var result = await _mediator.Send(query);
             var response = _mapper.Map<UserProfileDto>(result);
             // Simulate fetching user profile by ID  
             return Ok(response);

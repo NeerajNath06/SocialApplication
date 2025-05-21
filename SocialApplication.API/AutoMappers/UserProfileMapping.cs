@@ -12,9 +12,10 @@ namespace SocialApplication.API.AutoMappers
     {
         public UserProfileMapping()
         {
-            CreateMap<AddUserProfile, AddUserProfileCommand>();
+            CreateMap<AddUpdateUserProfile, AddUserProfileCommand>();
+            CreateMap<AddUpdateUserProfile, UpdateUserProfileByIdCommand>();
             CreateMap<UserProfile, UserProfileDto>();
-            CreateMap<UserProfile, UserInfoDto>();
+            CreateMap<UserInfo, UserInfoDto>();
         }
     }
 }
