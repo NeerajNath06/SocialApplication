@@ -1,13 +1,12 @@
-﻿using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 
 namespace SocialApplication.Application.Commands.UserProfiles
 {
-    public class UpdateUserProfileByIdCommand : IRequest<Unit>
+    using MediatR;
+    using SocialApplication.Application.ErrorModels;
+    using SocialApplication.Domain.Aggregates.UserProfiles;
+    using System;
+    public class UpdateUserProfileByIdCommand : IRequest<OperationsResult<UserProfile>>
     {
         public Guid ProfileId { get; set; }
         public string FirstName { get; set; }

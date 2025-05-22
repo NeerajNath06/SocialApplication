@@ -54,6 +54,10 @@ namespace SocialApplication.API.Controllers.V1
         {
             var query = new GetUserProfileByIdQuery{ProfileId =Guid.Parse(id)};
             var result =  await _mediator.Send(query);
+            if (result == null)
+            {
+                return NotFound($"No User Associate with this {id} Id.");
+            }
             var response = _mapper.Map<UserProfileDto>(result);
             // Simulate fetching user profile by ID  
             return Ok(response);
@@ -66,8 +70,17 @@ namespace SocialApplication.API.Controllers.V1
             var command = _mapper.Map<UpdateUserProfileByIdCommand>(updateUserProfile);
             command.ProfileId = Guid.Parse(id);
             var result = await _mediator.Send(command);
-            // Simulate fetching user profile by ID  
-            return NoContent();
+            // Simulate fetching user profile by ID
+            if (result.IsError)
+            {
+                return BadRequest(result.Errors);
+            }
+            if (result.Payload == null)
+            {
+                return NotFound($"No User Associate with this {id} Id.");
+            }
+            //var response = _mapper.Map<UserProfileDto>(result.Payload);
+            return Ok(result);
         }
 
         [HttpDelete]
