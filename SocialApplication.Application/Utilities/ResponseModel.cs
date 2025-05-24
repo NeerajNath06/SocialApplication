@@ -8,11 +8,11 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace SocialApplication.Application.ErrorModels
+namespace SocialApplication.Application.Utilities
 {
     [ExcludeFromCodeCoverage]
     [Newtonsoft.Json.JsonConverter(typeof(ResponseModelConverter))]
-    [XmlRoot("ResponseModel", Namespace="")]
+    [XmlRoot("ResponseModel", Namespace = "")]
     public sealed class ResponseModel<T>
     {
         // <summary>

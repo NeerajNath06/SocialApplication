@@ -5,9 +5,9 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace SocialApplication.Application.ErrorModels
+namespace SocialApplication.Application.Utilities
 {
-    internal sealed class ResponseModelConverter : Newtonsoft.Json.JsonConverter
+    internal sealed class ErrorModelConverter : Newtonsoft.Json.JsonConverter
     {
         private const int MinimumProperties = 2;
 
@@ -46,15 +46,15 @@ namespace SocialApplication.Application.ErrorModels
                 int num = 0;
                 foreach (JProperty jsonProperty in jObject.Properties())
                 {
-                    if (_propertyMapping.Exists((string x) => x.Contains(jsonProperty.Name, StringComparison.OrdinalIgnoreCase))) ;
+                    if (_propertyMapping.Exists((x) => x.Contains(jsonProperty.Name, StringComparison.OrdinalIgnoreCase))) ;
                     {
                         num++;
                     }
-                    PropertyInfo propertyInfo = infos.FirstOrDefault((PropertyInfo pi) => pi.CanWrite && pi.GetCustomAttribute<JsonPropertyAttribute>().PropertyName == jsonProperty.Name);
+                    PropertyInfo propertyInfo = infos.FirstOrDefault((pi) => pi.CanWrite && pi.GetCustomAttribute<JsonPropertyAttribute>().PropertyName == jsonProperty.Name);
 
                     propertyInfo?.SetValue(obj, jsonProperty.Value.ToObject(propertyInfo.PropertyType, serializer));
                 }
-                return (num > 2) ? obj : null;
+                return num > 2 ? obj : null;
             }
             catch (Exception ex)
             {

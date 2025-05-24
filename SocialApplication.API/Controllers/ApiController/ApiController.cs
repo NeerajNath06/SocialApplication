@@ -1,16 +1,21 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.Extensions.Primitives;
-using SocialApplication.Application.ErrorModels;
-using System.Collections;
-using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
-using System.Net.Http.Headers;
+﻿
 
 namespace SocialApplication.API.Controllers.ApiController
 {
+    using MediatR;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.ModelBinding;
+    using Microsoft.Extensions.Primitives;
+    using SocialApplication.Application.Exceptions;
+    using SocialApplication.Application.Guards;
+    using SocialApplication.Application.Utilities;
+    using System.Collections;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Globalization;
+    using System.Net;
+    using System.Net.Http.Headers;
+
     [ApiController]
     [ExcludeFromCodeCoverage]
     public class ApiController : Controller
@@ -57,7 +62,7 @@ namespace SocialApplication.API.Controllers.ApiController
         // get the Bearer token from the request headers.
         // </summary>
 
-        protected string BearerToken=>base.HttpContext.Request.Headers.FirstOrDefault<KeyValuePair<string, StringValues>>((KeyValuePair<string, StringValues> f) =>f.Key == "Authorization").Value.FirstOrDefault();
+        protected string BearerToken => base.HttpContext.Request.Headers.FirstOrDefault<KeyValuePair<string, StringValues>>((KeyValuePair<string, StringValues> f) => f.Key == "Authorization").Value.FirstOrDefault();
 
         // <summary>
         // Get the language header from the request.
@@ -97,9 +102,9 @@ namespace SocialApplication.API.Controllers.ApiController
         // <summary>
         // Initializes a new instance of the ApiController class.
         // </summary>
-        public ApiController() 
+        public ApiController()
         {
-            
+
         }
 
         // <summary>
@@ -128,7 +133,7 @@ namespace SocialApplication.API.Controllers.ApiController
         private ResponseModel<T> CreateResponseModel<T>(T elements)
         {
 
-           if(typeof(T).GetInterfaces().Any((Type t)=>t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IEnumerable<>)))
+            if (typeof(T).GetInterfaces().Any((Type t) => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IEnumerable<>)))
             {
                 int numberOfElements = ((IEnumerable)(object)elements).Cast<object>().Count();
                 return new ResponseModel<T>
@@ -137,11 +142,124 @@ namespace SocialApplication.API.Controllers.ApiController
                     NumberOfElements = numberOfElements,
                 };
             }
-           return new ResponseModel<T>
-           {
-               Elements = elements,
-               NumberOfElements = 1,
-           };
+            return new ResponseModel<T>
+            {
+                Elements = elements,
+                NumberOfElements = 1,
+            };
+        }
+
+        [NonAction]
+        public AcceptedResult Accepted<T>(Uri uri, T value)
+        {
+            return new AcceptedResult(uri.AgainsNull(), CreateResponseModel(value));
+        }
+
+        [NonAction]
+        public AcceptedAtRouteResult AcceptedAtRoute<T>(string routeName, object routeValues, T value)
+        {
+            return new AcceptedAtRouteResult(routeName, routeValues, CreateResponseModel(value));
+        }
+
+        [NonAction]
+        public BadRequestObjectResult BadRequest(IEnumerable<string> messages)
+        {
+            _logger.LogError(string.Join("\r\n", messages.Select((string v) => v ?? ""), base.HttpContext.Request.Method), "BadRequest", "ApiController Call.");
+            return new BadRequestObjectResult(CreateResponseModel(messages));
+        }
+
+        [NonAction]
+        protected IActionResult Ok<T>([NotNull] T value)
+        {
+            return base.Ok(CreateResponseModel(value));
+        }
+
+        [NonAction]
+        public override NotFoundResult NotFound()
+        {
+            return new NotFoundResult();
+        }
+
+        [NonAction]
+        public IActionResult NotFound<T>(T value, string message) where T : Exception
+        {
+            T val = value.AgainsNull("NotFoud");
+            string messsage2 = message.AgainstEmpty("NotFound");
+            Guid errorId = Guid.NewGuid();
+
+            _logger.LogError(val.Message, base.HttpContext.Request.Method, "NotFound", "ApiController Call.");
+            return StatusCode(410, new ErrorModel<T>
+            {
+                Message = messsage2,
+                ErrorId = errorId,
+            });
+        }
+
+        [NonAction]
+        public IActionResult Gone(string message, Exception value)
+        {
+            Exception ex = value.AgainsNull("Gone");
+            string messsage2 = message.AgainstEmpty("Gone");
+            Guid errorId = Guid.NewGuid();
+            _logger.LogError(ex.Message, errorId, base.HttpContext.Request.Method, "Gone", "ApiController Call.");
+
+            return StatusCode(410, new ErrorModel<Exception>
+            {
+                Message = messsage2,
+                ErrorId = errorId,
+            });
+        }
+
+        [NonAction]
+        public IActionResult Gone(string message)
+        {
+            string messsage2 = message.AgainstEmpty("Gone");
+            Guid errorId = Guid.NewGuid();
+            _logger.LogError(messsage2, errorId, base.HttpContext.Request.Method, "Gone", "ApiController Call.");
+
+            return StatusCode(410, new ErrorModel<Exception>
+            {
+                Message = messsage2,
+                ErrorId = errorId,
+            });
+        }
+
+        [NonAction]
+        public IActionResult Gone(Exception value)
+        {
+            Exception ex = value.AgainsNull("Gone");
+            Guid errorId = Guid.NewGuid();
+            _logger.LogError(ex.Message, errorId, base.HttpContext.Request.Method, "Gone", "ApiController Call.");
+
+            return StatusCode(410, new ErrorModel<Exception>
+            {
+                Message = ex.Message,
+                ErrorId = errorId,
+            });
+        }
+
+        [NonAction]
+        public IActionResult Gone()
+        {
+            _logger.LogError(string.Empty, base.HttpContext.Request.Method, "Gone", "ApiController Call.");
+            return StatusCode(410, new ErrorModel<Exception>
+            {
+                Message = string.Empty,
+                ErrorId = Guid.NewGuid(),
+            });
+        }
+
+        [NonAction]
+        public async Task<IActionResult> ApiErrorAsyc<T>([NotNull] T value, int statusCode) where T : ApiException
+        {
+            ErrorModel<Exception> errorModel = await value.GetContentAsAsync<ErrorModel<Exception>>().ConfigureAwait(continueOnCapturedContext: false);
+            _logger.LogError(errorModel.Message, errorModel.ErrorId, base.HttpContext.Request.Method, "ApiError", "ApiController Call.");
+            return StatusCode(statusCode, new ErrorModel<T>
+            {
+                StatusCode = (HttpStatusCode)statusCode,
+                Message = errorModel.Message,
+                ErrorId = errorModel.ErrorId,
+            });
         }
     }
 }
