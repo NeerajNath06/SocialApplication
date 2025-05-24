@@ -1,5 +1,4 @@
 ﻿
-
 namespace SocialApplication.Domain.Aggregates.Posts
 {
     using SocialApplication.Domain.Aggregates.UserProfiles;
@@ -8,14 +7,14 @@ namespace SocialApplication.Domain.Aggregates.Posts
 
     public class Post
     {
-        private readonly List<PostComment> _postComments;
-        private readonly List<PostInteraction> _postInteractions;
+        private readonly List<PostComment> _postComments = new List<PostComment>();
+        private readonly List<PostInteraction> _postInteractions = new List<PostInteraction>();
         private Post()
         {
         }
         public Guid PostId { get; private set; }
         public Guid UserProfileId { get; private set; }
-        public UserProfile UserProfile { get; private set; }
+        public UserProfile? UserProfile { get; private set; }
         public string? PostContent { get; private set; }
         public DateTime CreatedAt { get; private set; }
         public DateTime UpdatedAt { get; private set; }

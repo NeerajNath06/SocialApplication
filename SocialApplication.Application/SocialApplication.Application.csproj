@@ -7,15 +7,27 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Commands\Posts\**" />
+    <Compile Remove="Handlers\Posts\**" />
+    <Compile Remove="Queries\Posts\**" />
+    <EmbeddedResource Remove="Commands\Posts\**" />
+    <EmbeddedResource Remove="Handlers\Posts\**" />
+    <EmbeddedResource Remove="Queries\Posts\**" />
+    <None Remove="Commands\Posts\**" />
+    <None Remove="Handlers\Posts\**" />
+    <None Remove="Queries\Posts\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="14.0.0" />
     <PackageReference Include="MediatR" Version="12.5.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Commands\Posts\" />
-    <Folder Include="Handlers\Posts\" />
-    <Folder Include="Queries\Posts\" />
+    <Folder Include="Commands\BaseCommands\" />
+    <Folder Include="Handlers\BaseHandlers\" />
+    <Folder Include="Queries\GenericQueries\" />
   </ItemGroup>
 
   <ItemGroup>

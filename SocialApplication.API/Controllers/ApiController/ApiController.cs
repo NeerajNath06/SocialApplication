@@ -250,7 +250,7 @@ namespace SocialApplication.API.Controllers.ApiController
         }
 
         [NonAction]
-        public async Task<IActionResult> ApiErrorAsyc<T>([NotNull] T value, int statusCode) where T : ApiException
+        public async Task<IActionResult> ApiErrorAsync<T>([NotNull] T value, int statusCode) where T : ApiException
         {
             ErrorModel<Exception> errorModel = await value.GetContentAsAsync<ErrorModel<Exception>>().ConfigureAwait(continueOnCapturedContext: false);
             _logger.LogError(errorModel.Message, errorModel.ErrorId, base.HttpContext.Request.Method, "ApiError", "ApiController Call.");
@@ -259,6 +259,73 @@ namespace SocialApplication.API.Controllers.ApiController
                 StatusCode = (HttpStatusCode)statusCode,
                 Message = errorModel.Message,
                 ErrorId = errorModel.ErrorId,
+            });
+        }
+
+        [NonAction]
+        public async Task<IActionResult> ApiErrorAsync<T>([NotNull] T value) where T : ApiException
+        {
+            T variable = value.AgainsNull("ApiError");
+            ErrorModel<Exception> errorModel = await variable.GetContentAsAsync<ErrorModel<Exception>>().ConfigureAwait(continueOnCapturedContext: false);
+            Guid errorId = Guid.NewGuid();
+            if (errorModel == null)
+            {
+                _logger.LogError(errorModel.Message, errorModel.ErrorId, base.HttpContext.Request.Method, "An error occurred while processing your request.", "ApiController Call.");
+                return StatusCode((int)variable.StatusCode, new ErrorModel<T>
+                {
+                    Message = variable.Message,
+                    ErrorId = errorId,
+                    StatusCode = variable.StatusCode
+                });
+            }
+
+            _logger.LogError(errorModel.Message, errorModel.ErrorId, base.HttpContext.Request.Method, "An error occurred while processing your request.", "ApiController Call.");
+            return StatusCode((int)variable.StatusCode, new ErrorModel<T>
+            {
+                Message = variable.Message,
+                ErrorId = errorModel.ErrorId,
+                StatusCode = variable.StatusCode
+            });
+        }
+
+        [NonAction]
+        public IActionResult Error<T>([NotNull] T value) where T : Exception
+        {
+            T val = value.AgainsNull("Error");
+            Guid errorId = Guid.NewGuid();
+            HttpStatusCode statusCode = HttpStatusCode.NoContent;
+            if(!(value is ArgumentException))
+            {
+                if (!(value is NullReferenceException))
+                {
+                    if (!(value is IndexOutOfRangeException && !(value is FormatException)))
+                    {
+                        if (value is ApiException)
+                        {
+                            ((ApiException)(object)val).RequestMessage.Headers.Authorization = null;
+                            statusCode = HttpStatusCode.InternalServerError;
+                        }
+                        else
+                        {
+                            statusCode = HttpStatusCode.InternalServerError;
+                        }
+                    }
+                    else
+                    {
+                        statusCode = HttpStatusCode.BadRequest;
+                    }
+                }
+                else
+                {
+                    statusCode = HttpStatusCode.InternalServerError;
+                }
+            }
+            _logger.LogError(val.Message, errorId, base.HttpContext.Request.Method, "An error occurred while processing your request.", "ApiController Call.");
+            return StatusCode((int)statusCode, new ErrorModel<T>
+            {
+                Message = val.Message,
+                ErrorId = errorId,
+                StatusCode = statusCode
             });
         }
     }

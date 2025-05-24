@@ -1,6 +1,6 @@
 ﻿namespace SocialApplication.Application.Exceptions
 {
-    internal class ValidationApiException : ApiException
+    public class ValidationApiException : ApiException
     {
         public ErrorDetails Content { get; private set; }
         public ValidationApiException(ApiException apiException)
