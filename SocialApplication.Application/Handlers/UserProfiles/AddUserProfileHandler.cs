@@ -33,7 +33,7 @@ namespace SocialApplication.Application.Handlers.UserProfiles
                 userProfile
                 );
 
-            await _dbContext.UserProfiles.AddAsync(userProfileEntity, cancellationToken);
+            //await _dbContext.UserProfiles.AddAsync(userProfileEntity, cancellationToken);
             await _dbContext.SaveChangesAsync(cancellationToken);
 
             return userProfileEntity;

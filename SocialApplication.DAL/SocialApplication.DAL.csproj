@@ -7,6 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Configurations\IdentityUserLoginConfig.cs" />
+    <Compile Remove="Configurations\IdentityUserRoleConfig.cs" />
+    <Compile Remove="Configurations\IdentityUserTokenConfig.cs" />
+    <Compile Remove="Configurations\PostCommentConfig.cs" />
+    <Compile Remove="Configurations\PostInterActionConfig.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.16" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.5" />
