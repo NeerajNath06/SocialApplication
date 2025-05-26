@@ -1,6 +1,10 @@
-@SocialApplication.API_HostAddress = http://localhost:5216
+@SocialApplication.API_HostAddress = https://localhost:7113
 
-GET {{SocialApplication.API_HostAddress}}/weatherforecast/
+
+###
+GET {{SocialApplication.API_HostAddress}}/api/v1/UserProfiles/GetAllUserProfiles
 Accept: application/json
 
+GET {{SocialApplication.API_HostAddress}}/api/v1/UserProfiles/785a3f43-83a9-4b47-d231-08dd9aea63e2
+Accept: application/json
 ###

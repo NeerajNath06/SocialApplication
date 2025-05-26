@@ -53,7 +53,7 @@ namespace SocialApplication.Application.Handlers.UserProfiles
                 _dbContext.UserProfiles.Update(userProfile);
                 await _dbContext.SaveChangesAsync(cancellationToken);
                 operationsResult.Payload = userProfile;
-                operationsResult.ErrorId = new Guid("0000-0000-0000-0000");
+                operationsResult.ErrorId = new Guid();
                 operationsResult.IsSuccess = true;
             }
             // Handle any validation errors that occur during the update process
